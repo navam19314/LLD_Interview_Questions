@@ -17,7 +17,7 @@ public class Board {
 
 
     public boolean addPiece(int row, int column, PlayingPiece playingPiece) {
-
+        // Check if cell is already occupied
         if (board[row][column] != null) {
             return false;
         }
@@ -32,8 +32,8 @@ public class Board {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 if (board[i][j] == null) {
-                    Pair<Integer, Integer> rowColumn = new Pair<>(i, j);
-                    freeCells.add(rowColumn);
+                    Pair<Integer, Integer> cell = new Pair<>(i, j);
+                    freeCells.add(cell);
                 }
             }
         }
@@ -42,19 +42,16 @@ public class Board {
     }
 
     public void printBoard() {
-
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 if (board[i][j] != null) {
                     System.out.print(board[i][j].pieceType.name() + "   ");
                 } else {
                     System.out.print("    ");
-
                 }
                 System.out.print(" | ");
             }
             System.out.println();
-
         }
     }
 }
