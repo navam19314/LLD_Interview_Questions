@@ -11,41 +11,49 @@ public class NearestElevatorStrategy implements ElevatorSelectionStrategy {
                                              int requestFloor,
                                              ElevatorDirection direction) {
 
-        ElevatorController best = null;
+        ElevatorController bestController = null;
         int minDistance = Integer.MAX_VALUE;
 
-        //1. Pick the one which is going in same direction and minimum distance from the destination
+        // Step 1: Find elevator going in same direction with minimum distance
         for (ElevatorController controller : controllers) {
             int nextFloorStoppage = controller.elevatorCar.nextFloorStoppage;
+            ElevatorDirection elevatorDirection = controller.elevatorCar.movingDirection;
 
-            // Good candidate if moving same direction & not passed requested floor
-            boolean isSameDirectionCandidate =
-                    controller.elevatorCar.movingDirection == direction &&
-                            ((direction == ElevatorDirection.UP && nextFloorStoppage <= requestFloor) ||
-                                    (direction == ElevatorDirection.DOWN && nextFloorStoppage >= requestFloor));
+            // Check if elevator is moving in same direction
+            boolean isSameDirection = (elevatorDirection == direction);
+            
+            // Check if elevator hasn't passed the requested floor
+            boolean hasNotPassedFloor = false;
+            if (direction == ElevatorDirection.UP && nextFloorStoppage <= requestFloor) {
+                hasNotPassedFloor = true;
+            } else if (direction == ElevatorDirection.DOWN && nextFloorStoppage >= requestFloor) {
+                hasNotPassedFloor = true;
+            }
 
-            int dist = Math.abs(nextFloorStoppage - requestFloor);
+            boolean isGoodCandidate = isSameDirection && hasNotPassedFloor;
+            int distance = Math.abs(nextFloorStoppage - requestFloor);
 
-            if (isSameDirectionCandidate && dist < minDistance) {
-                minDistance = dist;
-                best = controller;
+            if (isGoodCandidate && distance < minDistance) {
+                minDistance = distance;
+                bestController = controller;
             }
         }
 
-        // fallback: if not able to choose, pick the idle one
-        if (best == null) {
+        // Step 2: Fallback - pick idle elevator if no same-direction elevator found
+        if (bestController == null) {
             for (ElevatorController controller : controllers) {
-                if(controller.elevatorCar.movingDirection == ElevatorDirection.IDLE) {
-                    best = controller;
+                if (controller.elevatorCar.movingDirection == ElevatorDirection.IDLE) {
+                    bestController = controller;
                     break;
                 }
             }
 
-            //reached here means, no list is going in same direction and no lift is IDLE too, then pick any lift
-            if(best == null) {
-                best = controllers.get(0);
+            // Step 3: Final fallback - pick any elevator if none is idle
+            if (bestController == null) {
+                bestController = controllers.get(0);
             }
         }
-        return best;
+        
+        return bestController;
     }
 }

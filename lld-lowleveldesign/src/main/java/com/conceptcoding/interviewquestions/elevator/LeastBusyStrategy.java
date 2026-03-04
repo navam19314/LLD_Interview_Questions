@@ -11,18 +11,21 @@ public class LeastBusyStrategy implements ElevatorSelectionStrategy {
                                              int requestFloor,
                                              ElevatorDirection direction) {
 
-        ElevatorController best = null;
+        ElevatorController bestController = null;
         int minLoad = Integer.MAX_VALUE;
 
+        // Find elevator with minimum pending requests
         for (ElevatorController controller : controllers) {
-            int load = controller.upMinPQ.size() +
-                    controller.downMaxPQ.size();
+            int upQueueSize = controller.upMinPQ.size();
+            int downQueueSize = controller.downMaxPQ.size();
+            int totalLoad = upQueueSize + downQueueSize;
 
-            if (load < minLoad) {
-                minLoad = load;
-                best = controller;
+            if (totalLoad < minLoad) {
+                minLoad = totalLoad;
+                bestController = controller;
             }
         }
-        return best;
+        
+        return bestController;
     }
 }

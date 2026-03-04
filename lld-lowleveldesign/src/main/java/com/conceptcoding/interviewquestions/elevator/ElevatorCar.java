@@ -18,14 +18,17 @@ public class ElevatorCar {
     }
 
     public void showDisplay() {
-        System.out.println("elevator:" + id + " Current floor: " + currentFloor + " going: " + movingDirection);
+        System.out.println("Elevator: " + id + " Current floor: " + currentFloor + 
+                          " Direction: " + movingDirection);
     }
 
     public void moveElevator(int destinationFloor) {
-        //this is dump object, so if command has come, to go particular direction and particular floor, it just move
-        //no matter what its current state and floor.
+        // This is a simplified elevator that moves directly to destination
+        // regardless of current state or floor
 
         this.nextFloorStoppage = destinationFloor;
+        
+        // If already at destination, just open door
         if (this.currentFloor == nextFloorStoppage) {
             door.openDoor(id);
             return;
@@ -33,35 +36,40 @@ public class ElevatorCar {
 
         int startFloor = this.currentFloor;
         door.closeDoor(id);
-        if(nextFloorStoppage >=currentFloor) {
+
+        // Move UP
+        if (nextFloorStoppage >= currentFloor) {
             movingDirection = ElevatorDirection.UP;
             showDisplay();
-            //+1 i am doing bcoz, floor start from 0,1,2.... so if anyone goes from 1st floor to 2nd, so only 1 floor
-            //lift has to move, not 2.
-            for (int i = startFloor+1; i<= nextFloorStoppage; i++) {
+            
+            // Start from next floor (startFloor+1) because we're already at startFloor
+            // For example: moving from floor 1 to 2 means moving 1 floor, not 2
+            for (int i = startFloor + 1; i <= nextFloorStoppage; i++) {
                 try {
-                    Thread.sleep(5);
-                }catch (Exception e) {
-
+                    Thread.sleep(5); // Simulate floor-to-floor movement time
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 setCurrentFloor(i);
                 showDisplay();
             }
-        }
-        else  {
+        } 
+        // Move DOWN
+        else {
             movingDirection = ElevatorDirection.DOWN;
-
             showDisplay();
-            for (int i = startFloor-1; i>= nextFloorStoppage; i--) {
+            
+            for (int i = startFloor - 1; i >= nextFloorStoppage; i--) {
                 try {
-                    Thread.sleep(5);
-                }catch (Exception e) {
-
+                    Thread.sleep(5); // Simulate floor-to-floor movement time
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 setCurrentFloor(i);
                 showDisplay();
             }
         }
+        
         door.openDoor(id);
     }
 

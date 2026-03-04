@@ -17,39 +17,37 @@ public class Demo {
             ElevatorController controller2 = new ElevatorController(car2);
 
 
-            // 2. Create one internal buttons for each elevator
-            InternalButton internalButton_for_elevator1 = new InternalButton(controller1);
-            InternalButton internalButton_for_elevator2 = new InternalButton(controller2);
+            // 2. Create internal buttons for each elevator
+            InternalButton internalButtonElevator1 = new InternalButton(controller1);
+            InternalButton internalButtonElevator2 = new InternalButton(controller2);
 
-
-            //3. create Scheduler with Nearest Strategy
+            // 3. Create scheduler with Nearest Strategy
             ElevatorScheduler elevatorScheduler = new ElevatorScheduler(
                     Arrays.asList(controller1, controller2),
                     new NearestElevatorStrategy()
             );
 
-            //4. Create External Dispatcher
+            // 4. Create External Dispatcher
             ExternalDispatcher externalDispatcher = new ExternalDispatcher(elevatorScheduler);
 
-
-            // Create a 5 floor building:
+            // 5. Create a 5-floor building
             Building building = new Building(5, externalDispatcher);
 
-            // 6. Start both the elevator controllers threads
+            // 6. Start both elevator controller threads
             new Thread(controller1, "Elevator-1").start();
             new Thread(controller2, "Elevator-2").start();
 
 
 
 
-            // Lets submit the requests
+            // Submit elevator requests
             /*
-                1. External Call : Floor 3 UP
-                2. External Call : Floor 5 DOWN
-                3. Internal Call : Elevator 1 (press 4)
-                4. Internal Call : Elevator 1 (press 5)
-                5. External Call : Floor 1 DOWN
-                6. External Call : Floor 2 UP
+                1. External Call: Floor 3 UP
+                2. External Call: Floor 5 DOWN
+                3. Internal Call: Elevator 1 (press 4)
+                4. Internal Call: Elevator 1 (press 5)
+                5. External Call: Floor 1 DOWN
+                6. External Call: Floor 2 UP
              */
 
             building.getFloor(3).pressUpButton();
@@ -58,10 +56,10 @@ public class Demo {
             building.getFloor(5).pressDownButton();
             Thread.sleep(5);
 
-            internalButton_for_elevator1.pressButton(4); // user inside elevator 1 presses floor 4
+            internalButtonElevator1.pressButton(4); // User inside elevator 1 presses floor 4
             Thread.sleep(5);
 
-            internalButton_for_elevator1.pressButton(5); // user inside elevator 1 presses floor 5
+            internalButtonElevator1.pressButton(5); // User inside elevator 1 presses floor 5
             Thread.sleep(5);
 
             building.getFloor(1).pressDownButton();
@@ -70,10 +68,10 @@ public class Demo {
             building.getFloor(2).pressUpButton();
             Thread.sleep(5);
 
-            internalButton_for_elevator1.pressButton(2); // user inside elevator1 presses floor 2
+            internalButtonElevator1.pressButton(2); // User inside elevator 1 presses floor 2
         }
         catch (Exception e) {
-
+            e.printStackTrace();
         }
 
     }

@@ -13,7 +13,7 @@ public class Building {
         }
     }
 
-    public Floor getFloor(int floor) {
-        return floors.get(floor-1);
+    public Floor getFloor(int floorNumber) {
+        return floors.get(floorNumber - 1);
     }
 }

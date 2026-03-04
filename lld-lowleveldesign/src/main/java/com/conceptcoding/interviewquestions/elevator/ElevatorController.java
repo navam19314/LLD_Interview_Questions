@@ -14,9 +14,9 @@ public class ElevatorController implements Runnable {
     private final Object monitor = new Object();
 
     ElevatorController(ElevatorCar elevatorCar) {
-
         this.elevatorCar = elevatorCar;
         upMinPQ = new PriorityBlockingQueue<>();
+        // Max heap for down direction (highest floor first)
         downMaxPQ = new PriorityBlockingQueue<>(10, (a, b) -> b - a);
     }
 
@@ -25,11 +25,15 @@ public class ElevatorController implements Runnable {
     }
 
     private void enqueueRequest(int destinationFloor) {
-        System.out.println("Request details-> destinationFloor: " + destinationFloor + " accepted by elevator:" + elevatorCar.id);
+        System.out.println("Request details -> destinationFloor: " + destinationFloor + 
+                          " accepted by elevator: " + elevatorCar.id);
 
-        if (destinationFloor == elevatorCar.nextFloorStoppage){
+        // Skip if already at destination
+        if (destinationFloor == elevatorCar.nextFloorStoppage) {
             return;
         }
+
+        // Add to appropriate queue based on direction
         if (destinationFloor >= elevatorCar.nextFloorStoppage) {
             if (!upMinPQ.contains(destinationFloor)) {
                 upMinPQ.offer(destinationFloor);
@@ -40,8 +44,9 @@ public class ElevatorController implements Runnable {
             }
         }
 
+        // Wake up elevator thread to process request
         synchronized (monitor) {
-            monitor.notify();   // wake elevator thread
+            monitor.notify();
         }
     }
 
@@ -51,33 +56,33 @@ public class ElevatorController implements Runnable {
     }
 
     public void controlElevator() {
-
         while (true) {
-
-            //no request, go to sleep
+            // Wait if no requests - elevator goes to sleep
             synchronized (monitor) {
                 while (upMinPQ.isEmpty() && downMaxPQ.isEmpty()) {
                     try {
-                        System.out.println("elevator:" + elevatorCar.id + " is IDLE");
+                        System.out.println("Elevator: " + elevatorCar.id + " is IDLE");
                         elevatorCar.movingDirection = ElevatorDirection.IDLE;
-                        monitor.wait(); // sleep until request arrives
+                        monitor.wait(); // Sleep until request arrives
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                     }
                 }
             }
 
-
+            // Process all UP requests
             while (!upMinPQ.isEmpty()) {
                 int floor = upMinPQ.poll();
-                System.out.println("Serving floor: " + floor + " by elevator:" + elevatorCar.id + " currentFloor: " + elevatorCar.currentFloor);
+                System.out.println("Serving floor: " + floor + " by elevator: " + 
+                                 elevatorCar.id + " currentFloor: " + elevatorCar.currentFloor);
                 elevatorCar.moveElevator(floor);
             }
 
-
+            // Process all DOWN requests
             while (!downMaxPQ.isEmpty()) {
                 int floor = downMaxPQ.poll();
-                System.out.println("Serving floor: " + floor + " by elevator:" + elevatorCar.id + " currentFloor: " + elevatorCar.currentFloor);
+                System.out.println("Serving floor: " + floor + " by elevator: " + 
+                                 elevatorCar.id + " currentFloor: " + elevatorCar.currentFloor);
                 elevatorCar.moveElevator(floor);
             }
         }
