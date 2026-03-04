@@ -24,12 +24,11 @@ public class Store {
     private final PaymentManager paymentManager;
 
     public Store(int storeId, Location location) {
-
         this.storeId = storeId;
         this.storeLocation = location;
         this.inventory = new VehicleInventoryManager();
-        this.billManager = new BillManager(new DailyBillingStrategy(inventory)); //default
-        this.paymentManager = new PaymentManager(new UPIPaymentStrategy()); //default
+        this.billManager = new BillManager(new DailyBillingStrategy(inventory)); // Default billing strategy
+        this.paymentManager = new PaymentManager(new UPIPaymentStrategy()); // Default payment strategy
         this.reservationManager = new ReservationManager(inventory);
     }
 
@@ -62,23 +61,24 @@ public class Store {
     // ----------------- Billing & Payment ------------------
 
     public Bill generateBill(int reservationId, BillingStrategy billingStrategy) {
-        Reservation r = reservationManager.findByID(reservationId)
+        Reservation reservation = reservationManager.findByID(reservationId)
                 .orElseThrow(() -> new RuntimeException("Reservation not found"));
 
         billManager.setBillingStrategy(billingStrategy);
-        return billManager.generateBill(r);
+        return billManager.generateBill(reservation);
     }
 
     public Payment makePayment(Bill bill, PaymentStrategy paymentStrategy, double paymentAmount) {
-
+        // Step 1: Set payment strategy and process payment
         paymentManager.setPaymentStrategy(paymentStrategy);
         Payment payment = paymentManager.makePayment(bill, paymentAmount);
 
+        // Step 2: Verify payment was successful
         if (!bill.isBillPaid()) {
             throw new RuntimeException("Payment failed");
         }
 
-        // NOW we can safely remove the reservation from the repo
+        // Step 3: Remove reservation after successful payment
         reservationManager.remove(bill.getReservationId());
         return payment;
     }

@@ -23,15 +23,8 @@ public class Demo {
         // 1. Create Stores in System
         // ---------------------------------------------------------
 
-        // Create a store1
-        Location store1Location = new Location(
-                45,
-                "Area1",
-                "City1",
-                "State1",
-                "India",
-                12345
-        );
+        // Create store 1
+        Location store1Location = new Location(45, "Area1", "City1", "State1", "India", 12345);
         Store store1 = new Store(1001, store1Location);
         rentalSystem.addStore(store1);
 
@@ -39,7 +32,7 @@ public class Demo {
         // 2. Create Users in System
         // ---------------------------------------------------------
 
-        // Create 2 users
+        // Create users
         User user1 = new User(801, "SJ", "DL2022GDG556690");
         User user2 = new User(802, "DJ", "DL2017DHW9090765231");
         rentalSystem.addUser(user1);
@@ -49,14 +42,14 @@ public class Demo {
         // ---------------------------------------------------------
         // 3. Add vehicles to store inventory
         // ---------------------------------------------------------
-        Vehicle v1 = new Vehicle(1, "DL1234", VehicleType.FOUR_WHEELER);
-        v1.setDailyRentalCost(1100);
+        Vehicle vehicle1 = new Vehicle(1, "DL1234", VehicleType.FOUR_WHEELER);
+        vehicle1.setDailyRentalCost(1100);
 
-        Vehicle v2 = new Vehicle(2, "DL5678", VehicleType.FOUR_WHEELER);
-        v2.setDailyRentalCost(1400);
+        Vehicle vehicle2 = new Vehicle(2, "DL5678", VehicleType.FOUR_WHEELER);
+        vehicle2.setDailyRentalCost(1400);
 
-        store1.getInventory().addVehicle(v1);
-        store1.getInventory().addVehicle(v2);
+        store1.getInventory().addVehicle(vehicle1);
+        store1.getInventory().addVehicle(vehicle2);
 
 
         // ---------------------------------------------------------
@@ -65,12 +58,12 @@ public class Demo {
         Store selectedStore = rentalSystem.getStore(1001);
 
         LocalDate fromDate = LocalDate.of(2025, 12, 5);
-        LocalDate toDate   = LocalDate.of(2025, 12, 7);
+        LocalDate toDate = LocalDate.of(2025, 12, 7);
 
         System.out.println("\nAvailable vehicles from " + fromDate + " to " + toDate + ":");
 
-        for (Vehicle v : selectedStore.getVehicles(VehicleType.FOUR_WHEELER, fromDate, toDate)) {
-            System.out.println(" - " + v.getVehicleID() + ": " + v.getVehicleType());
+        for (Vehicle vehicle : selectedStore.getVehicles(VehicleType.FOUR_WHEELER, fromDate, toDate)) {
+            System.out.println(" - " + vehicle.getVehicleID() + ": " + vehicle.getVehicleType());
         }
 
 
@@ -79,14 +72,13 @@ public class Demo {
         // ---------------------------------------------------------
         System.out.println("\nCreating reservation...");
 
-        Reservation reservation =
-                selectedStore.createReservation(
-                        1,                // vehicle ID
-                        user1,
-                        fromDate,
-                        toDate,
-                        ReservationType.DAILY
-                );
+        Reservation reservation = selectedStore.createReservation(
+                1,  // vehicle ID
+                user1,
+                fromDate,
+                toDate,
+                ReservationType.DAILY
+        );
 
         System.out.println("Reservation created with ID: " + reservation.getReservationId());
 
@@ -117,11 +109,15 @@ public class Demo {
 
 
         // ---------------------------------------------------------
-        // 8. User makes payment
+        // 9. User makes payment
         // ---------------------------------------------------------
         System.out.println("\nProcessing Payment...");
 
-        Payment payment = selectedStore.makePayment(bill, new UPIPaymentStrategy(), bill.getTotalBillAmount());
+        Payment payment = selectedStore.makePayment(
+                bill,
+                new UPIPaymentStrategy(),
+                bill.getTotalBillAmount()
+        );
 
         System.out.println("\n===== PAYMENT RECEIPT =====");
         System.out.println("Payment ID: " + payment.getPaymentId());

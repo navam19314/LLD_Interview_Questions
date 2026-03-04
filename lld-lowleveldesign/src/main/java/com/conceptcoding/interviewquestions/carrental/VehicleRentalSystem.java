@@ -17,18 +17,29 @@ public class VehicleRentalSystem {
     List<Store> storeList;
     List<User> userList;
 
-    public VehicleRentalSystem(){
-
+    public VehicleRentalSystem() {
         storeList = new ArrayList<>();
         userList = new ArrayList<>();
     }
 
     public Store getStore(int storeId) {
-        return storeList.stream().filter(store -> store.getStoreId() == storeId).findFirst().get();
+        // Find store by ID
+        for (Store store : storeList) {
+            if (store.getStoreId() == storeId) {
+                return store;
+            }
+        }
+        throw new RuntimeException("Store not found with ID: " + storeId);
     }
 
     public User getUser(int userId) {
-        return userList.get(userId);
+        // Find user by ID
+        for (User user : userList) {
+            if (user.getUserId() == userId) {
+                return user;
+            }
+        }
+        throw new RuntimeException("User not found with ID: " + userId);
     }
 
     public void addStore(Store store) {
@@ -40,11 +51,13 @@ public class VehicleRentalSystem {
     }
 
     public void removeStore(int storeId) {
-        storeList.remove(storeId);
+        // Remove store by ID
+        storeList.removeIf(store -> store.getStoreId() == storeId);
     }
 
     public void removeUser(int userId) {
-        userList.remove(userId);
+        // Remove user by ID
+        userList.removeIf(user -> user.getUserId() == userId);
     }
 
 }

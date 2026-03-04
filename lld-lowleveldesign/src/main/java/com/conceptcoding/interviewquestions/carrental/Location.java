@@ -9,7 +9,7 @@ public class Location {
     String country;
     int pincode;
 
-    Location(int buildingNo, String area, String city, String state, String country, int pincode) {
+    public Location(int buildingNo, String area, String city, String state, String country, int pincode) {
         this.buildingNo = buildingNo;
         this.area = area;
         this.city = city;
