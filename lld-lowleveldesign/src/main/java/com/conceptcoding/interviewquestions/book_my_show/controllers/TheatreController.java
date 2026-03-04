@@ -1,7 +1,6 @@
 package com.conceptcoding.interviewquestions.book_my_show.controllers;
 
 import com.conceptcoding.interviewquestions.book_my_show.entities.Movie;
-import com.conceptcoding.interviewquestions.book_my_show.entities.Screen;
 import com.conceptcoding.interviewquestions.book_my_show.entities.Show;
 import com.conceptcoding.interviewquestions.book_my_show.entities.Theatre;
 import com.conceptcoding.interviewquestions.book_my_show.enums.City;

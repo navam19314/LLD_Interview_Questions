@@ -22,9 +22,11 @@ public class Screen {
     }
 
     public void addShow(Show show) {
-        showsByDate
-                .computeIfAbsent(show.getShowDate(), d -> new ArrayList<>())
-                .add(show);
+        LocalDate showDate = show.getShowDate();
+        if (!showsByDate.containsKey(showDate)) {
+            showsByDate.put(showDate, new ArrayList<>());
+        }
+        showsByDate.get(showDate).add(show);
     }
 
     public List<Show> getShows(LocalDate date) {

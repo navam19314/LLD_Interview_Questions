@@ -109,56 +109,50 @@ public class BookMyShowApp {
         City selectedCity = City.BANGALORE;
         System.out.println("Selected City: " + selectedCity);
 
-        // 2. for specific date, Show movies running in city
+        // 2. Show movies running in city for specific date
         LocalDate selectedDate = LocalDate.now();
         System.out.println("Selected Date: " + selectedDate);
 
-        Set<Movie> movies = theatreController.getMovies(selectedCity, selectedDate);
+        Set<Movie> availableMovies = theatreController.getMovies(selectedCity, selectedDate);
         System.out.println("Movies available:");
-        movies.forEach(m -> System.out.println(" - " + m.getName()));
+        for (Movie movie : availableMovies) {
+            System.out.println(" - " + movie.getName());
+        }
 
         // 3. User selects movie
-        Movie selectedMovie = movies.iterator().next(); //selecting first movie
+        Movie selectedMovie = availableMovies.iterator().next(); // Selecting first movie
         System.out.println("Selected Movie: " + selectedMovie.getName());
 
 
-        // 4. Show theatres and show times in city
-        List<Theatre> theatres = theatreController.getTheatres(selectedCity, selectedMovie, selectedDate);
+        // 4. Show theatres running the selected movie in city
+        List<Theatre> availableTheatres = theatreController.getTheatres(selectedCity, selectedMovie, selectedDate);
         System.out.println("Theatres available:");
-        theatres.forEach(t -> System.out.println(" - " + t.getName()));
+        for (Theatre theatre : availableTheatres) {
+            System.out.println(" - " + theatre.getName());
+        }
 
-        // 6. User selects theatre
-        Theatre selectedTheatre = theatres.get(0);
+        // 5. User selects theatre
+        Theatre selectedTheatre = availableTheatres.get(0);
         System.out.println("Selected Theatre: " + selectedTheatre.getName());
 
-        // 7. Show running shows for movie + date + theatre
-        List<Show> shows =
-                theatreController.getShows(
-                        selectedMovie,
-                        selectedDate,
-                        selectedTheatre
-                );
+        // 6. Show available show times for selected movie, date and theatre
+        List<Show> availableShows = theatreController.getShows(selectedMovie, selectedDate, selectedTheatre);
 
         System.out.println("Shows available:");
-        shows.forEach(s ->
-                System.out.println(" - " + s.getStartTime())
-        );
+        for (Show show : availableShows) {
+            System.out.println(" - " + show.getStartTime());
+        }
 
-        // 8. User selects show
-        Show selectedShow = shows.get(0);
+        // 7. User selects show
+        Show selectedShow = availableShows.get(0);
         System.out.println("Selected Show Time: " + selectedShow.getStartTime());
 
-        // 9. User selects seats
+        // 8. User selects seats
         List<Integer> selectedSeats = List.of(1, 2, 3);
         System.out.println("Selected Seats: " + selectedSeats);
 
-        // 10. Booking + Payment
-        Booking booking =
-                bookingController.createBooking(
-                        user,
-                        selectedShow,
-                        selectedSeats
-                );
+        // 9. Create booking and process payment
+        Booking booking = bookingController.createBooking(user, selectedShow, selectedSeats);
 
         System.out.println("BOOKING SUCCESSFUL");
         System.out.println("Booking ID: " + booking.getBookingId());

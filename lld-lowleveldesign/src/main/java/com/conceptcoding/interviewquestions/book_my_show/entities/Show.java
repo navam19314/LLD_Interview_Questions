@@ -40,37 +40,37 @@ public class Show {
     }
 
     public boolean lockSeats(List<Integer> seatIds) {
-        List<Integer> sorted = new ArrayList<>(seatIds);
-
-        //sorting i am doing to avoid deadlock scenario
-        Collections.sort(sorted);
+        // Sort seat IDs to avoid deadlock (always acquire locks in same order)
+        List<Integer> sortedSeatIds = new ArrayList<>(seatIds);
+        Collections.sort(sortedSeatIds);
 
         List<ReentrantLock> acquiredLocks = new ArrayList<>();
 
         try {
-            // Phase 1: acquire all locks
-            for (int seatId : sorted) {
+            // Step 1: Acquire locks for all seats
+            for (int seatId : sortedSeatIds) {
                 ReentrantLock lock = seatLocks.get(seatId);
                 lock.lock();
                 acquiredLocks.add(lock);
             }
 
-            // Phase 2: validate availability
-            for (int seatId : sorted) {
-                if (seatStatusMap.get(seatId) != SeatStatus.AVAILABLE) {
-                    return false;
+            // Step 2: Check if all seats are available
+            for (int seatId : sortedSeatIds) {
+                SeatStatus currentStatus = seatStatusMap.get(seatId);
+                if (currentStatus != SeatStatus.AVAILABLE) {
+                    return false; // At least one seat is not available
                 }
             }
 
-            // Phase 3: mark LOCKED
-            for (int seatId : sorted) {
+            // Step 3: Mark all seats as LOCKED
+            for (int seatId : sortedSeatIds) {
                 seatStatusMap.put(seatId, SeatStatus.LOCKED);
             }
 
             return true;
 
         } finally {
-            // Phase 4: release locks
+            // Step 4: Always release all locks
             for (ReentrantLock lock : acquiredLocks) {
                 lock.unlock();
             }
