@@ -8,12 +8,13 @@ public class RandomLookupStrategy implements ParkingSpotLookupStrategy {
 
     @Override
     public ParkingSpot selectSpot(List<ParkingSpot> spots) {
-        for(ParkingSpot spot : spots) {
-            if(spot.isSpotFree()) {
+        // Return first available free spot
+        for (ParkingSpot spot : spots) {
+            if (spot.isSpotFree()) {
                 return spot;
             }
         }
-        return null;
+        return null; // No free spot found
     }
 }
 

@@ -21,54 +21,52 @@ import java.util.Map;
 public class ParkingLotClient {
 
     public static void main(String[] args) {
-
+        // Step 1: Create lookup strategy for spot selection
         ParkingSpotLookupStrategy strategy = new RandomLookupStrategy();
 
+        // Step 2: Create Level 1 with spot managers
         Map<VehicleType, ParkingSpotManager> levelOneManagers = new HashMap<>();
         levelOneManagers.put(VehicleType.TWO_WHEELER,
-                new TwoWheelerSpotManager(List.of(new ParkingSpot("L1-S1"),
-                        new ParkingSpot("L1-S2")), strategy));
-
+                new TwoWheelerSpotManager(
+                        List.of(new ParkingSpot("L1-S1"), new ParkingSpot("L1-S2")),
+                        strategy));
         levelOneManagers.put(VehicleType.FOUR_WHEELER,
-                new FourWheelerSpotManager(List.of(new ParkingSpot("L1-S3")), strategy));
+                new FourWheelerSpotManager(
+                        List.of(new ParkingSpot("L1-S3")),
+                        strategy));
+        ParkingLevel level1 = new ParkingLevel(1, levelOneManagers);
 
-        ParkingLevel level1 = new ParkingLevel(
-                1, levelOneManagers
-        );
-
+        // Step 3: Create Level 2 with spot managers
         Map<VehicleType, ParkingSpotManager> levelTwoManagers = new HashMap<>();
         levelTwoManagers.put(VehicleType.TWO_WHEELER,
-                new TwoWheelerSpotManager(List.of(new ParkingSpot("L2-S1")), strategy));
-
+                new TwoWheelerSpotManager(
+                        List.of(new ParkingSpot("L2-S1")),
+                        strategy));
         levelTwoManagers.put(VehicleType.FOUR_WHEELER,
-                new FourWheelerSpotManager(List.of(new ParkingSpot("L2-S2"),
-                        new ParkingSpot("L2-S3")), strategy));
+                new FourWheelerSpotManager(
+                        List.of(new ParkingSpot("L2-S2"), new ParkingSpot("L2-S3")),
+                        strategy));
+        ParkingLevel level2 = new ParkingLevel(2, levelTwoManagers);
 
+        // Step 4: Create parking building with levels
+        ParkingBuilding parkingBuilding = new ParkingBuilding(
+                List.of(level1, level2),
+                new CostComputation(new FixedPricingStrategy()));
 
-        ParkingLevel level2 = new ParkingLevel(
-                2, levelTwoManagers
-        );
-
-        ParkingBuilding parkingBuilding =
-                new ParkingBuilding(
-                        List.of(level1, level2),
-                        new CostComputation(new FixedPricingStrategy())
-                );
-
+        // Step 5: Create parking lot with building, entrance and exit gates
         ParkingLot parkingLot = new ParkingLot(
                 parkingBuilding,
                 new EntranceGate(),
-                new ExitGate(new CostComputation(new FixedPricingStrategy()))
-        );
+                new ExitGate(new CostComputation(new FixedPricingStrategy())));
 
-
+        // Step 6: Test parking lot with vehicles
         Vehicle bike = new Vehicle("BIKE-101", VehicleType.TWO_WHEELER);
         Vehicle car = new Vehicle("CAR-201", VehicleType.FOUR_WHEELER);
 
-        Ticket t1 = parkingLot.vehicleArrives(bike);
-        Ticket t2 = parkingLot.vehicleArrives(car);
+        Ticket bikeTicket = parkingLot.vehicleArrives(bike);
+        Ticket carTicket = parkingLot.vehicleArrives(car);
 
-        parkingLot.vehicleExits(t1, new CashPayment());
-        parkingLot.vehicleExits(t2, new UPIPayment());
+        parkingLot.vehicleExits(bikeTicket, new CashPayment());
+        parkingLot.vehicleExits(carTicket, new UPIPayment());
     }
 }

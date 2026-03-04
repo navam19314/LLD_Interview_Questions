@@ -26,8 +26,7 @@ public class ParkingLevel {
     public ParkingSpot park(VehicleType type) {
         ParkingSpotManager manager = managers.get(type);
         if (manager == null) {
-            throw new IllegalArgumentException(
-                    "No parking manager for vehicle type: " + type);
+            throw new IllegalArgumentException("No parking manager for vehicle type: " + type);
         }
         return manager.park();
     }

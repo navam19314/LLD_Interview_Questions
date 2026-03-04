@@ -21,11 +21,13 @@ public abstract class ParkingSpotManager {
     public ParkingSpot park() {
         lock.lock();
         try {
+            // Step 1: Select a free spot using strategy
             ParkingSpot spot = strategy.selectSpot(spots);
             if (spot == null) {
-                return null;
+                return null; // No free spot available
             }
 
+            // Step 2: Occupy the selected spot
             spot.occupySpot();
             return spot;
         } finally {
@@ -45,7 +47,13 @@ public abstract class ParkingSpotManager {
     public boolean hasFreeSpot() {
         lock.lock();
         try {
-            return spots.stream().anyMatch(ParkingSpot::isSpotFree);
+            // Check if any spot is free
+            for (ParkingSpot spot : spots) {
+                if (spot.isSpotFree()) {
+                    return true;
+                }
+            }
+            return false;
         } finally {
             lock.unlock();
         }

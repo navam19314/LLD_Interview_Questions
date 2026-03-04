@@ -15,14 +15,16 @@ public class ExitGate {
     public void completeExit(ParkingBuilding building,
                              Ticket ticket,
                              Payment payment) {
-
+        // Step 1: Calculate parking cost
         double amount = calculatePrice(ticket);
 
-        boolean success = payment.pay(amount);
-        if (!success) {
+        // Step 2: Process payment
+        boolean paymentSuccess = payment.pay(amount);
+        if (!paymentSuccess) {
             throw new RuntimeException("Payment failed. Exit denied.");
         }
 
+        // Step 3: Release parking spot
         building.release(ticket);
         System.out.println("Exit successful. Gate opened.");
     }

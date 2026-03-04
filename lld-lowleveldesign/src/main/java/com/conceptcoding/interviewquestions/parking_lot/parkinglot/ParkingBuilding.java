@@ -3,6 +3,7 @@ package com.conceptcoding.interviewquestions.parking_lot.parkinglot;
 import com.conceptcoding.interviewquestions.parking_lot.Entity.Vehicle;
 import com.conceptcoding.interviewquestions.parking_lot.Entity.ParkingSpot;
 import com.conceptcoding.interviewquestions.parking_lot.Ticket;
+import com.conceptcoding.interviewquestions.parking_lot.enums.VehicleType;
 import com.conceptcoding.interviewquestions.parking_lot.pricing.CostComputation;
 
 import java.util.List;
@@ -17,14 +18,16 @@ public class ParkingBuilding {
     }
 
     Ticket allocate(Vehicle vehicle) {
+        // Search for available spot across all levels
         for (ParkingLevel level : levels) {
-            if (level.hasAvailability(vehicle.getVehicleType())) {
-                ParkingSpot spot = level.park(vehicle.getVehicleType());
+            VehicleType vehicleType = vehicle.getVehicleType();
+            
+            if (level.hasAvailability(vehicleType)) {
+                ParkingSpot spot = level.park(vehicleType);
                 if (spot != null) {
                     Ticket ticket = new Ticket(vehicle, level, spot);
-                    System.out.println("Parking allocated at level: "
-                            + level.getLevelNumber()
-                            + " spot: " + spot.getSpotId());
+                    System.out.println("Parking allocated at level: " + level.getLevelNumber() +
+                                     " spot: " + spot.getSpotId());
                     return ticket;
                 }
             }
@@ -33,10 +36,9 @@ public class ParkingBuilding {
     }
 
     void release(Ticket ticket) {
-        ticket.getLevel().unPark(
-                ticket.getVehicle().getVehicleType(),
-                ticket.getSpot()
-        );
+        ParkingLevel level = ticket.getLevel();
+        VehicleType vehicleType = ticket.getVehicle().getVehicleType();
+        level.unPark(vehicleType, ticket.getSpot());
     }
 }
 

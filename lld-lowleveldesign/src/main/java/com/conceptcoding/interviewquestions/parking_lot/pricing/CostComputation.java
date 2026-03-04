@@ -10,8 +10,7 @@ public class CostComputation {
         this.pricingStrategy = pricingStrategy;
     }
 
-    public double compute(Ticket ticket) {;
-
+    public double compute(Ticket ticket) {
         return pricingStrategy.calculate(ticket);
     }
 }
