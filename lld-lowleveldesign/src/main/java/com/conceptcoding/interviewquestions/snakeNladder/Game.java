@@ -30,45 +30,55 @@ public class Game {
 
     public void startGame() {
         while (winner == null) {
-            //check whose turn now
-            Player playerTurn = findPlayerTurn();
-            System.out.println("Player turn:" + playerTurn.id + " current position is: " + playerTurn.currentPosition);
+            // Step 1: Find whose turn it is
+            Player currentPlayer = findPlayerTurn();
+            System.out.println("Player turn: " + currentPlayer.id + 
+                             " current position is: " + currentPlayer.currentPosition);
 
-            //roll the dice
-            int diceNumbers = dice.rollDice();
+            // Step 2: Roll the dice
+            int diceValue = dice.rollDice();
 
-            //get the new position
-            int playerNewPosition = playerTurn.currentPosition + diceNumbers;
-            playerNewPosition = jumpCheck(playerNewPosition);
-            playerTurn.currentPosition = playerNewPosition;
+            // Step 3: Calculate new position
+            int newPosition = currentPlayer.currentPosition + diceValue;
+            newPosition = jumpCheck(newPosition);
+            currentPlayer.currentPosition = newPosition;
 
-            System.out.println("Player turn:" + playerTurn.id + " new Position is: " + playerNewPosition);
-            //check for winning condition
-            if (playerNewPosition >= board.cells.length * board.cells.length - 1) {
-                winner = playerTurn;
+            System.out.println("Player turn: " + currentPlayer.id + 
+                             " new Position is: " + newPosition);
+            
+            // Step 4: Check for winning condition
+            int boardSize = board.cells.length * board.cells.length;
+            if (newPosition >= boardSize - 1) {
+                winner = currentPlayer;
             }
         }
-        System.out.println("\n===> The Winner is:" + winner.id);
+        System.out.println("\n===> The Winner is: " + winner.id);
     }
 
 
     private Player findPlayerTurn() {
-        Player playerTurns = playersList.removeFirst();
-        playersList.addLast(playerTurns);
-        return playerTurns;
+        // Rotate players: remove from front and add to back
+        Player currentPlayer = playersList.removeFirst();
+        playersList.addLast(currentPlayer);
+        return currentPlayer;
     }
 
-    private int jumpCheck(int playerNewPosition) {
-        if (playerNewPosition > board.cells.length * board.cells.length - 1) {
-            return playerNewPosition;
+    private int jumpCheck(int newPosition) {
+        int boardSize = board.cells.length * board.cells.length;
+        
+        // If position exceeds board, return as is
+        if (newPosition > boardSize - 1) {
+            return newPosition;
         }
 
-        Cell cell = board.getCell(playerNewPosition);
-        if (cell.jump != null && cell.jump.start == playerNewPosition) {
-            String jumpBy = (cell.jump.start < cell.jump.end) ? "Ladder" : "Snake";
-            System.out.println("[+] Jump done by: " + jumpBy);
+        // Check if cell has a snake or ladder
+        Cell cell = board.getCell(newPosition);
+        if (cell.jump != null && cell.jump.start == newPosition) {
+            String jumpType = (cell.jump.start < cell.jump.end) ? "Ladder" : "Snake";
+            System.out.println("[+] Jump done by: " + jumpType);
             return cell.jump.end;
         }
-        return playerNewPosition;
+        
+        return newPosition;
     }
 }
